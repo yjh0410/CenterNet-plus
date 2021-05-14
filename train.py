@@ -242,7 +242,7 @@ def train():
             # multi-scale trick
             if iter_i % 10 == 0 and iter_i > 0 and args.multi_scale:
                 # randomly choose a new size
-                train_size = random.randint(10, 19) * 32
+                train_size = random.randint(10, 20) * 32
                 model.set_grid(train_size)
             if args.multi_scale:
                 # interpolate
