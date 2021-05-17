@@ -124,7 +124,7 @@ class CoordConv(nn.Module):
         super(CoordConv, self).__init__()
         self.conv = Conv(in_ch + 2, out_ch, k=k, p=p, s=s, d=d, g=g, act=act)
 
-    def forward(self, x, gridxy):
+    def forward(self, x):
         """CoordConv.
 
             Input:
@@ -132,12 +132,16 @@ class CoordConv(nn.Module):
                 gridxy: [1, H*W, 2]
         """
         B, _, H, W = x.size()
-        # [1, H*W, 2] -> [B, H*W, 2]
-        gridxy = gridxy.repeat(B, 1)
-        gridxy = gridxy.view(B, H, W, 2)
+        device = x.device
+        grid_y, grid_x = torch.meshgrid([torch.arange(H), torch.arange(W)])
+        # [2, H, W]
+        gridxy = torch.stack([grid_x, grid_y], dim=0).float()
+        # [H, W, 2] -> [B, H, W, 2]
+        gridxy = gridxy.repeat(B, 1, 1, 1).to(device)
+
         # normalize gridxy -> [-1, 1]
-        gridxy[:, :, :, 0] = (gridxy[:, :, :, 0] / (W - 1)) * 2.0 - 1.0
-        gridxy[:, :, :, 1] = (gridxy[:, :, :, 1] / (H - 1)) * 2.0 - 1.0
+        gridxy[:, 0, :, :] = (gridxy[:, 0, :, :] / (W - 1)) * 2.0 - 1.0
+        gridxy[:, 1, :, :] = (gridxy[:, 1, :, :] / (H - 1)) * 2.0 - 1.0
 
         x_coord = torch.cat([x, gridxy], dim=1)
         y = self.conv(x_coord)

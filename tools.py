@@ -65,11 +65,11 @@ def generate_txtytwth(gt_label, w, h, s, gauss=False, gs=1.0):
     box_h_s = box_h / s
 
     if gauss:
-        # r = gaussian_radius([box_w_s, box_h_s])
-        # r = max(int(r), 1)
-        # rw, rh = r
-        rw = max(int(box_w_s / 2), 1)
-        rh = max(int(box_h_s / 2), 1)
+        r = gaussian_radius([box_w_s, box_h_s])
+        r = max(int(r), 1)
+        rw = rh = r
+        # rw = max(int(box_w_s / 2), 1)
+        # rh = max(int(box_h_s / 2), 1)
     else:
         r = None
 
