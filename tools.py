@@ -53,7 +53,7 @@ def gaussian_radius(det_size, min_overlap=0.7):
     return min(r1, r2, r3)
 
 
-def generate_txtytwth(gt_label, w, h, s, gauss=False, gs=1.0):
+def generate_txtytwth(gt_label, w, h, s, gauss=False):
     x1, y1, x2, y2 = gt_label[:-1]
     # compute the center, width and height
     c_x = (x2 + x1) / 2 * w
@@ -83,8 +83,8 @@ def generate_txtytwth(gt_label, w, h, s, gauss=False, gs=1.0):
     grid_x = int(c_x_s)
     grid_y = int(c_y_s)
     # compute the (x, y, w, h) for the corresponding grid cell
-    tx = (c_x_s - grid_x + (gs - 1.0) / 2) / gs # c_x_s - grid_x
-    ty = (c_y_s - grid_y + (gs - 1.0) / 2) / gs # c_y_s - grid_y
+    tx = c_x_s - grid_x
+    ty = c_y_s - grid_y
     tw = np.log(box_w_s)
     th = np.log(box_h_s)
     weight = 2.0 - (box_w / w) * (box_h / h)
@@ -92,7 +92,7 @@ def generate_txtytwth(gt_label, w, h, s, gauss=False, gs=1.0):
     return grid_x, grid_y, tx, ty, tw, th, weight, rw, rh, x1, y1, x2, y2
 
 
-def gt_creator(input_size, stride, num_classes, label_lists=[], gauss=True, gs=1.0):
+def gt_creator(input_size, stride, num_classes, label_lists=[], gauss=True):
     # prepare the all empty gt datas
     batch_size = len(label_lists)
     h = w = input_size
@@ -106,7 +106,7 @@ def gt_creator(input_size, stride, num_classes, label_lists=[], gauss=True, gs=1
         for gt_label in label_lists[batch_index]:
             gt_cls = gt_label[-1]
 
-            result = generate_txtytwth(gt_label, w, h, s, gauss=gauss, gs=gs)
+            result = generate_txtytwth(gt_label, w, h, s, gauss=gauss)
             if result:
                 grid_x, grid_y, tx, ty, tw, th, weight, rw, rh, x1, y1, x2, y2 = result
 

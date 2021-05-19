@@ -15,8 +15,6 @@ parser.add_argument('-d', '--dataset', default='voc',
                     help='voc, coco-val, coco-test.')
 parser.add_argument('-size', '--input_size', default=512, type=int,
                     help='input_size')
-parser.add_argument('-gs', '--grid_sensitive', default=1.0, type=float, 
-                    help='grid sensitive parameter')
 parser.add_argument('--trained_model', type=str,
                     default='weights/', 
                     help='Trained state_dict file path to open')
@@ -100,8 +98,7 @@ if __name__ == '__main__':
                           input_size=input_size, 
                           num_classes=num_classes, 
                           backbone=args.backbone,
-                          use_nms=args.use_nms,
-                          gs=args.grid_sensitive
+                          use_nms=args.use_nms
                           )
 
     # load net

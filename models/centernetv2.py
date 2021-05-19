@@ -81,15 +81,15 @@ class CenterNetv2(nn.Module):
         # upsample
         self.deconv4 = ResizeConv(in_ch=p5, out_ch=p4, scale_factor=2) # 32 -> 16
         self.latter4 = Conv(c4, p4, k=1, act=False)
-        self.smooth4 = CoordConv(p4, p4, k=3, p=1) # Conv(p4, p4, k=3, p=1)
+        self.smooth4 = Conv(p4, p4, k=3, p=1)
 
         self.deconv3 = ResizeConv(in_ch=p4, out_ch=p3, scale_factor=2) # 16 -> 8
         self.latter3 = Conv(c3, p3, k=1, act=False)
-        self.smooth3 = CoordConv(p3, p3, k=3, p=1) # Conv(p3, p3, k=3, p=1)
+        self.smooth3 = Conv(p3, p3, k=3, p=1)
 
         self.deconv2 = ResizeConv(in_ch=p3, out_ch=p2, scale_factor=2) #  8 -> 4
         self.latter2 = Conv(c2, p2, k=1, act=False)
-        self.smooth2 = CoordConv(p2, p2, k=3, p=1) # Conv(p2, p2, k=3, p=1)
+        self.smooth2 = Conv(p2, p2, k=3, p=1)
         
 
         # detection head

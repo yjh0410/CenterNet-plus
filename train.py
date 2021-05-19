@@ -41,8 +41,6 @@ def parse_args():
                         help='Batch size for training')
     parser.add_argument('--lr', default=1e-3, type=float, 
                         help='initial learning rate')
-    parser.add_argument('-gs', '--grid_sensitive', default=1.0, type=float, 
-                        help='grid sensitive parameter')
     parser.add_argument('-no_wp', '--no_warm_up', action='store_true', default=False,
                         help='yes or no to choose using warmup strategy to train')
     parser.add_argument('--wp_epoch', type=int, default=1,
@@ -107,9 +105,6 @@ def train():
     else:
         train_size = 512
         val_size = 512
-
-    # grid sensitive
-    print('grid sensitive parameter: ', args.grid_sensitive)
 
     # config
     cfg = train_cfg
@@ -176,8 +171,7 @@ def train():
                           input_size=train_size, 
                           num_classes=num_classes, 
                           trainable=True, 
-                          backbone=args.backbone,
-                          gs=args.grid_sensitive)
+                          backbone=args.backbone)
         print('Let us train centernet on the %s dataset ......' % (args.dataset))
 
     else:
@@ -254,8 +248,7 @@ def train():
                                         stride=net.stride,
                                         num_classes=num_classes,
                                         label_lists=targets, 
-                                        gauss=args.gauss,
-                                        gs=args.grid_sensitive
+                                        gauss=args.gauss
                                         )
             # # vis data
             # vis_heatmap(targets)

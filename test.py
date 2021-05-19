@@ -19,8 +19,6 @@ parser.add_argument('-d', '--dataset', default='voc',
                     help='voc, coco-val.')
 parser.add_argument('-size', '--input_size', default=512, type=int,
                     help='input_size')
-parser.add_argument('-gs', '--grid_sensitive', default=1.0, type=float, 
-                    help='grid sensitive parameter')
 parser.add_argument('--trained_model', default='weight/',
                     type=str, help='Trained state_dict file path to open')
 parser.add_argument('-vs', '--visual_threshold', default=0.3, type=float,
@@ -135,8 +133,7 @@ if __name__ == '__main__':
                           backbone=args.backbone,
                           conf_thresh=args.conf_thresh, 
                           nms_thresh=args.nms_thresh, 
-                          use_nms=args.use_nms,
-                          gs=args.grid_sensitive
+                          use_nms=args.use_nms
                           )
 
     net.load_state_dict(torch.load(args.trained_model, map_location=device))
