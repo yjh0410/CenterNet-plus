@@ -244,13 +244,17 @@ def train():
             
             # make train label
             targets = [label.tolist() for label in targets]
+            # vis data
+            # 可视化数据，以便查看预处理部分是否有问题，将下面两行取消注释即可
+            # vis_data(images, targets, train_size)
+            # continue
             targets = tools.gt_creator(input_size=train_size, 
                                         stride=net.stride,
                                         num_classes=num_classes,
                                         label_lists=targets, 
                                         gauss=args.gauss
                                         )
-            # # vis data
+            # 可视化高斯热力图
             # vis_heatmap(targets)
             # continue
             # to device
@@ -341,6 +345,31 @@ def vis_heatmap(targets):
         cv2.imshow(name, heatmap)
         cv2.waitKey(0)
     cv2.destroyAllWindows()
+
+
+def vis_data(images, targets, input_size):
+    # vis data
+    mean=(0.406, 0.456, 0.485)
+    std=(0.225, 0.224, 0.229)
+    mean = np.array(mean, dtype=np.float32)
+    std = np.array(std, dtype=np.float32)
+
+    img = images[0].permute(1, 2, 0).cpu().numpy()[:, :, ::-1]
+    img = ((img * std + mean)*255).astype(np.uint8)
+    cv2.imwrite('1.jpg', img)
+
+    img_ = cv2.imread('1.jpg')
+    for box in targets[0]:
+        xmin, ymin, xmax, ymax = box[:-1]
+        # print(xmin, ymin, xmax, ymax)
+        xmin *= input_size
+        ymin *= input_size
+        xmax *= input_size
+        ymax *= input_size
+        cv2.rectangle(img_, (int(xmin), int(ymin)), (int(xmax), int(ymax)), (0, 0, 255), 2)
+
+    cv2.imshow('img', img_)
+    cv2.waitKey(0)
 
 
 if __name__ == '__main__':
