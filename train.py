@@ -305,7 +305,7 @@ def train():
         # evaluation
         if (epoch + 1) % args.eval_epoch == 0:
             if args.ema:
-                model_eval = ema.model
+                model_eval = ema.ema
             else:
                 model_eval = model
 
