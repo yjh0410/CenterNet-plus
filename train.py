@@ -101,10 +101,10 @@ def train():
     if args.multi_scale:
         print('use the multi-scale trick ...')
         train_size = 640
-        val_size = 512
+        val_size = 640
     else:
-        train_size = 512
-        val_size = 512
+        train_size = 640
+        val_size = 640
 
     # config
     cfg = train_cfg
@@ -341,7 +341,7 @@ def vis_heatmap(targets):
     for c in range(20):
         heatmap = targets[0, :, c].reshape(h, h).cpu().numpy()
         name = VOC_CLASSES[c]
-        heatmap = cv2.resize(heatmap, (512, 512))
+        heatmap = cv2.resize(heatmap, (640, 640))
         cv2.imshow(name, heatmap)
         cv2.waitKey(0)
     cv2.destroyAllWindows()
