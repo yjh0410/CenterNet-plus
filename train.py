@@ -283,7 +283,7 @@ def train():
                     writer.add_scalar('txty loss',  txty_loss.item(),  iter_i + epoch * epoch_size)
                     writer.add_scalar('twth loss',  twth_loss.item(),  iter_i + epoch * epoch_size)
                     writer.add_scalar('iou loss',   iou_loss.item(),   iter_i + epoch * epoch_size)
-                    writer.add_scalar('iou-aw loss',   iou_aware_loss.item(),   iter_i + epoch * epoch_size)
+                    writer.add_scalar('iou-aw loss', iou_aware_loss.item(),   iter_i + epoch * epoch_size)
                     writer.add_scalar('total loss', total_loss.item(), iter_i + epoch * epoch_size)
                 
                 t1 = time.time()

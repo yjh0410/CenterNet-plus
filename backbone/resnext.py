@@ -194,11 +194,7 @@ class ResNet(nn.Module):
         c4 = self.layer3(c3)
         c5 = self.layer4(c4)
 
-        # x = self.avgpool(x)
-        # x = x.reshape(x.size(0), -1)
-        # x = self.fc(x)
-
-        return c3, c4, c5
+        return c2, c3, c4, c5
 
 
 def _resnet(arch, block, layers, pretrained, progress, **kwargs):
