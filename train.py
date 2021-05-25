@@ -101,10 +101,10 @@ def train():
     if args.multi_scale:
         print('use the multi-scale trick ...')
         train_size = 640
-        val_size = 640
+        val_size = 512
     else:
-        train_size = 640
-        val_size = 640
+        train_size = 512
+        val_size = 512
 
     # config
     cfg = train_cfg
