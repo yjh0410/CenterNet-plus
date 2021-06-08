@@ -48,13 +48,13 @@ class CenterNetv2(nn.Module):
             p2, p3, p4, p5 = 256, 256, 256, 256
 
         elif self.bk == 'rx50':
-            print("Use backbone : resnet-50")
+            print("Use backbone : resnext-50")
             self.backbone = resnext50_32x4d(pretrained=trainable)
             c2, c3, c4, c5 = 256, 512, 1024, 2048
             p2, p3, p4, p5 = 256, 256, 256, 256
 
-        elif self.bk == 'r101':
-            print("Use backbone : resnet-101")
+        elif self.bk == 'rx101':
+            print("Use backbone : resnext-101")
             self.backbone = resnext101_32x8d(pretrained=trainable)
             c2, c3, c4, c5 = 256, 512, 1024, 2048
             p2, p3, p4, p5 = 256, 256, 256, 256
