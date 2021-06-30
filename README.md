@@ -4,8 +4,10 @@ A Simple Baseline for Object Detection based on CenterNet with ResNet backbone.
 CenterNet is a very simple yet efficient object detector. Based on this supreme work,
 I rebuild it with PyTorch.
 
-CenterNet is an encoder-decoder network, but I won't consider Hourglass-101 or DLA-34 in this
-project as they are both too heavy and time consuming.
+CenterNet is an encoder-decoder network, but I won't consider Hourglass-101 in this
+project as it is heavy and time consuming.
+
+I will try DLA-34 in the future, but let us focus ResNet for now.
 
 ## Weight
 You can download all my models from my BaiDuYunDisk:
