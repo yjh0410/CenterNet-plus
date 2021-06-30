@@ -1,5 +1,5 @@
-# CenterNetv2
-A Simple Baseline for Object Detection
+# CenterNet-plus
+A Simple Baseline for Object Detection based on CenterNet with ResNet backbone.
 
 CenterNet is a very simple yet efficient object detector. Based on this supreme work,
 I rebuild it with PyTorch.
