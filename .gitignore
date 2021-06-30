@@ -2,6 +2,5 @@
 *.pt
 *.pkl
 *.txt
-*.jpg
 .vscode
 __pycache__
