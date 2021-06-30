@@ -10,9 +10,9 @@ import tools
 import time
 
 
-parser = argparse.ArgumentParser(description='CenterNet Detection')
-parser.add_argument('-v', '--version', default='centernetv2',
-                    help='centernetv2')
+parser = argparse.ArgumentParser(description='CenterNet-plus Detection')
+parser.add_argument('-v', '--version', default='centernet_plus',
+                    help='centernet_plus')
 parser.add_argument('-bk', '--backbone', default='r18',
                     help='r18, r34, r50, r101')
 parser.add_argument('-d', '--dataset', default='voc',
@@ -125,9 +125,9 @@ if __name__ == '__main__':
     class_colors = [(np.random.randint(255),np.random.randint(255),np.random.randint(255)) for _ in range(num_classes)]
 
     # load net
-    if args.version == 'centernetv2':
-        from models.centernetv2 import CenterNetv2
-        net = CenterNetv2(device=device, 
+    if args.version == 'centernet_plus':
+        from models.centernet_plus import CenterNetPlus
+        net = CenterNetPlus(device=device, 
                           input_size=input_size, 
                           num_classes=num_classes,
                           backbone=args.backbone,
