@@ -45,29 +45,44 @@ I dont deploy any DCN in my CenterNet-plus.
 For example, you can use the following line of command to train my CenterNet-plus with ResNet-18 backbone.
 
 ```Shell
-python train.py -d coco --cuda --gauss --ema -bk r18 
+python train.py -d coco --cuda --ema -bk r18 
 ```
 
 
 COCO:
 
 <table><tbody>
-<tr><th align="left" bgcolor=#f8f8f8> </th>     <td bgcolor=white> backbone </td><td bgcolor=white> data </td><td bgcolor=white> AP </td><td bgcolor=white> AP50 </td><td bgcolor=white> AP75 </td><td bgcolor=white> AP_S </td><td bgcolor=white> AP_M </td><td bgcolor=white> AP_L </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> </th>     <td bgcolor=white> backbone </td><td bgcolor=white> data </td><td bgcolor=white> size </td><td bgcolor=white> AP </td><td bgcolor=white> AP50 </td><td bgcolor=white> AP75 </td><td bgcolor=white> AP_S </td><td bgcolor=white> AP_M </td><td bgcolor=white> AP_L </td></tr>
 
-<tr><th align="left" bgcolor=#f8f8f8> CenterNet-plus</th><td bgcolor=white> ResNet-18 </td><td bgcolor=white> COCO val </td><td bgcolor=white> 29.9 </td><td bgcolor=white> 49.1 </td><td bgcolor=white> 31.8 </td><td bgcolor=white> 14.4 </td><td bgcolor=white> 31.0 </td><td bgcolor=white> 43.1 </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> CenterNet-plus</th><td bgcolor=white> ResNet-18 </td><td bgcolor=white> COCO val </td><td bgcolor=white> 512x512 </td><td bgcolor=white> 29.9 </td><td bgcolor=white> 49.1 </td><td bgcolor=white> 31.8 </td><td bgcolor=white> 14.4 </td><td bgcolor=white> 31.0 </td><td bgcolor=white> 43.1 </td></tr>
 
-<tr><th align="left" bgcolor=#f8f8f8> CenterNet-plus</th><td bgcolor=white> ResNet-50 </td><td bgcolor=white> COCO val </td><td bgcolor=white> 36.0 </td><td bgcolor=white> 56.2 </td><td bgcolor=white> 38.9 </td><td bgcolor=white> 18.7 </td><td bgcolor=white> 38.9 </td><td bgcolor=white> 51.1 </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> CenterNet-plus</th><td bgcolor=white> ResNet-50 </td><td bgcolor=white> COCO val </td><td bgcolor=white> 512x512 </td><td bgcolor=white> 36.0 </td><td bgcolor=white> 56.2 </td><td bgcolor=white> 38.9 </td><td bgcolor=white> 18.7 </td><td bgcolor=white> 38.9 </td><td bgcolor=white> 51.1 </td></tr>
 
-<tr><th align="left" bgcolor=#f8f8f8> CenterNet-plus</th><td bgcolor=white> ResNet-101 </td><td bgcolor=white> COCO val </td><td bgcolor=white> 37.5 </td><td bgcolor=white> 57.7 </td><td bgcolor=white> 41.0 </td><td bgcolor=white> 19.5 </td><td bgcolor=white> 41.4 </td><td bgcolor=white> 53.0 </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> CenterNet-plus</th><td bgcolor=white> ResNet-101 </td><td bgcolor=white> COCO val </td><td bgcolor=white> 512x512 </td><td bgcolor=white> 37.5 </td><td bgcolor=white> 57.7 </td><td bgcolor=white> 41.0 </td><td bgcolor=white> 19.5 </td><td bgcolor=white> 41.4 </td><td bgcolor=white> 53.0 </td></tr>
 
-<tr><th align="left" bgcolor=#f8f8f8> CenterNet</th><td bgcolor=white> ResNet-18 </td><td bgcolor=white> COCO val </td><td bgcolor=white> 28.1 </td><td bgcolor=white> 44.9 </td><td bgcolor=white> 29.6 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> CenterNet</th><td bgcolor=white> ResNet-18 </td><td bgcolor=white> COCO val </td><td bgcolor=white> 512x512 </td><td bgcolor=white> 28.1 </td><td bgcolor=white> 44.9 </td><td bgcolor=white> 29.6 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
 
-<tr><th align="left" bgcolor=#f8f8f8> CenterNet</th><td bgcolor=white> ResNet-101 </td><td bgcolor=white> COCO val </td><td bgcolor=white> 34.6 </td><td bgcolor=white> 53.0 </td><td bgcolor=white> 36.9 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> CenterNet</th><td bgcolor=white> ResNet-101 </td><td bgcolor=white> COCO val </td><td bgcolor=white> 512x512 </td><td bgcolor=white> 34.6 </td><td bgcolor=white> 53.0 </td><td bgcolor=white> 36.9 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
 
-<tr><th align="left" bgcolor=#f8f8f8> CenterNet</th><td bgcolor=white> DLA-34 </td><td bgcolor=white> COCO val </td><td bgcolor=white> 37.4 </td><td bgcolor=white> 55.1 </td><td bgcolor=white> 40.8 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> CenterNet</th><td bgcolor=white> DLA-34 </td><td bgcolor=white> COCO val </td><td bgcolor=white> 512x512 </td><td bgcolor=white> 37.4 </td><td bgcolor=white> 55.1 </td><td bgcolor=white> 40.8 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
 
-<tr><th align="left" bgcolor=#f8f8f8> CenterNet</th><td bgcolor=white> Hourglass-104 </td><td bgcolor=white> COCO val </td><td bgcolor=white> 40.3 </td><td bgcolor=white> 59.1 </td><td bgcolor=white> 44.0 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> CenterNet</th><td bgcolor=white> Hourglass-104 </td><td bgcolor=white> COCO val </td><td bgcolor=white> 512x512 </td><td bgcolor=white> 40.3 </td><td bgcolor=white> 59.1 </td><td bgcolor=white> 44.0 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
 
 </table></tbody>
 
 With ResNet backbone, my CenterNet-plus works better.
+
+## Things I tried that did not work
+- multi scale training
+- mosaic augmentation
+
+When I use multi-scale training trick, my CenterNet-plus with ResNet18 got 25 AP lower than 29.9 AP.
+
+When I use mosaic augmentation, my CenterNet-plus with ResNet18 got only 25 AP.
+
+## What I am going to do next?
+- Replace txtytwth by GIoU to learning regression.
+- Add more positive samples to accelerated training.
+- Large image size: 640.
+- Try DLA-34 backbone.
+- DDP training mode.
