@@ -2,10 +2,8 @@ import json
 import tempfile
 
 from pycocotools.cocoeval import COCOeval
-from torch.autograd import Variable
 
-from data.cocodataset import *
-from data import *
+from data.coco2017 import *
 
 
 class COCOAPIEvaluator():
@@ -40,15 +38,13 @@ class COCOAPIEvaluator():
                                    json_file=json_file,
                                    transform=None,
                                    name=name)
-        self.dataloader = torch.utils.data.DataLoader(
-                                    self.dataset, 
-                                    batch_size=1, 
-                                    shuffle=False, 
-                                    collate_fn=detection_collate,
-                                    num_workers=0)
+
         self.img_size = img_size
         self.transform = transform
         self.device = device
+        self.ap50_95 = -1.
+        self.ap50 = -1.
+
 
     def evaluate(self, model):
         """
@@ -116,7 +112,13 @@ class COCOAPIEvaluator():
             cocoEval.evaluate()
             cocoEval.accumulate()
             cocoEval.summarize()
-            return cocoEval.stats[0], cocoEval.stats[1]
-        else:
-            return 0, 0
 
+            ap50_95, ap50 = cocoEval.stats[0], cocoEval.stats[1]
+            print('ap50_95 : ', ap50_95)
+            print('ap50 : ', ap50)
+            self.ap50_95 = ap50_95
+            self.ap50 = ap50
+
+            return ap50, ap50_95
+        else:
+            return -1, -1

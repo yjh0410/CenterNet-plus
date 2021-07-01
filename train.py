@@ -27,8 +27,6 @@ def parse_args():
                         help='r18, r34, r50, r101')
     parser.add_argument('-d', '--dataset', default='voc',
                         help='voc or coco')
-    parser.add_argument('-ms', '--multi_scale', action='store_true', default=False,
-                        help='use multi-scale trick')                  
     parser.add_argument('--cuda', action='store_true', default=False,
                         help='use cuda.')
     parser.add_argument('--mosaic', action='store_true', default=False,
@@ -61,8 +59,6 @@ def parse_args():
                             default=10, help='interval between evaluations')
     parser.add_argument('--tfboard', action='store_true', default=False,
                         help='use tensorboard')
-    parser.add_argument('--debug', action='store_true', default=False,
-                        help='debug mode where only one image is trained')
     parser.add_argument('--save_folder', default='weights/', type=str, 
                         help='Gamma update for SGD')
 
@@ -97,23 +93,22 @@ def train():
     if args.mosaic:
         print('use Mosaic Augmentation ...')
 
-    # multi-scale
-    if args.multi_scale:
-        print('use the multi-scale trick ...')
-        train_size = 640
-        val_size = 512
-    else:
-        train_size = 512
-        val_size = 512
-
     # config
     cfg = train_cfg
+
+    # img_size
+    train_size = cfg['train_size']
+    val_size = cfg['val_size']
+
 
     # dataset and evaluator
     if args.dataset == 'voc':
         data_dir = VOC_ROOT
         num_classes = 20
         dataset = VOCDetection(root=data_dir, 
+                                img_size=train_size,
+                                train=True,
+                                stride=32,
                                 transform=SSDAugmentation(train_size),
                                 base_transform=ColorAugmentation(train_size),
                                 mosaic=args.mosaic
@@ -131,9 +126,10 @@ def train():
         dataset = COCODataset(
                     data_dir=data_dir,
                     img_size=train_size,
+                    train=True,
+                    stride=32,
                     transform=SSDAugmentation(train_size),
                     base_transform=ColorAugmentation(train_size),
-                    debug=args.debug,
                     mosaic=args.mosaic
                     )
 
@@ -187,10 +183,10 @@ def train():
         print('use tensorboard')
         from torch.utils.tensorboard import SummaryWriter
         c_time = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
-        log_path = os.path.join('log/coco/', args.version, c_time)
+        log_path = os.path.join('log/', args.dataset, args.version, c_time)
         os.makedirs(log_path, exist_ok=True)
 
-        writer = SummaryWriter(log_path)
+        tblogger = SummaryWriter(log_path)
     
     # keep training
     if args.resume is not None:
@@ -208,10 +204,10 @@ def train():
 
     max_epoch = cfg['max_epoch']
     epoch_size = len(dataset) // args.batch_size
+    best_ap = -1.
 
-    # start training loop
     t0 = time.time()
-
+    # start training loop
     for epoch in range(args.start_epoch, max_epoch):
 
         # use step lr
@@ -232,31 +228,7 @@ def train():
                     tmp_lr = base_lr
                     set_lr(optimizer, tmp_lr)
         
-
-            # multi-scale trick
-            if iter_i % 10 == 0 and iter_i > 0 and args.multi_scale:
-                # randomly choose a new size
-                train_size = random.randint(10, 20) * 32
-                model.set_grid(train_size)
-            if args.multi_scale:
-                # interpolate
-                images = torch.nn.functional.interpolate(images, size=train_size, mode='bilinear', align_corners=False)
             
-            # make train label
-            targets = [label.tolist() for label in targets]
-            # vis data
-            # 可视化数据，以便查看预处理部分是否有问题，将下面两行取消注释即可
-            # vis_data(images, targets, train_size)
-            # continue
-            targets = tools.gt_creator(input_size=train_size, 
-                                        stride=net.stride,
-                                        num_classes=num_classes,
-                                        label_lists=targets, 
-                                        gauss=args.gauss
-                                        )
-            # 可视化高斯热力图
-            # vis_heatmap(targets)
-            # continue
             # to device
             images = images.to(device)
             targets = targets.to(device)
@@ -279,12 +251,12 @@ def train():
             if iter_i % 10 == 0:
                 if args.tfboard:
                     # viz loss
-                    writer.add_scalar('class loss', cls_loss.item(),   iter_i + epoch * epoch_size)
-                    writer.add_scalar('txty loss',  txty_loss.item(),  iter_i + epoch * epoch_size)
-                    writer.add_scalar('twth loss',  twth_loss.item(),  iter_i + epoch * epoch_size)
-                    writer.add_scalar('iou loss',   iou_loss.item(),   iter_i + epoch * epoch_size)
-                    writer.add_scalar('iou-aw loss', iou_aware_loss.item(),   iter_i + epoch * epoch_size)
-                    writer.add_scalar('total loss', total_loss.item(), iter_i + epoch * epoch_size)
+                    tblogger.add_scalar('class loss', cls_loss.item(),   iter_i + epoch * epoch_size)
+                    tblogger.add_scalar('txty loss',  txty_loss.item(),  iter_i + epoch * epoch_size)
+                    tblogger.add_scalar('twth loss',  twth_loss.item(),  iter_i + epoch * epoch_size)
+                    tblogger.add_scalar('iou loss',   iou_loss.item(),   iter_i + epoch * epoch_size)
+                    tblogger.add_scalar('iou-aw loss', iou_aware_loss.item(),   iter_i + epoch * epoch_size)
+                    tblogger.add_scalar('total loss', total_loss.item(), iter_i + epoch * epoch_size)
                 
                 t1 = time.time()
                 print('[Epoch %d/%d][Iter %d/%d][lr %.6f]'
@@ -315,6 +287,22 @@ def train():
 
             # evaluate
             evaluator.evaluate(model_eval)
+
+            cur_map = evaluator.map if args.dataset == 'voc' else evaluator.ap50_95
+            if cur_map > best_map:
+                # update best-map
+                best_map = cur_map
+                # save model
+                print('Saving state, epoch:', epoch + 1)
+                torch.save(model_eval.state_dict(), os.path.join(path_to_save, 
+                            args.version + '_' + repr(epoch + 1) + '_' + str(round(best_map, 2)) + '.pth')
+                            )  
+            if args.tfboard:
+                if args.dataset == 'voc':
+                    tblogger.add_scalar('07test/mAP', evaluator.map, epoch)
+                elif args.dataset == 'coco':
+                    tblogger.add_scalar('val/AP50_95', evaluator.ap50_95, epoch)
+                    tblogger.add_scalar('val/AP50', evaluator.ap50, epoch)
 
             # convert to training mode.
             model_eval.trainable = True

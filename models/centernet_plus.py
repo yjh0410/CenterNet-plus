@@ -1,13 +1,12 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from utils import Conv, ResizeConv, DilateEncoder, CoordConv
+from utils import Conv, ResizeConv, DilateEncoder
+from utils import box_ops, loss
 from backbone import *
 import numpy as np
-import tools
 
 import os
-import matplotlib.pyplot as plt
 import cv2
 
 
@@ -112,6 +111,11 @@ class CenterNetPlus(nn.Module):
             Conv(p2, 64, k=3, p=1),
             nn.Conv2d(64, 1, kernel_size=1)
         )
+
+        # init weight of cls_pred
+        init_prob = 0.01
+        bias_value = -torch.log(torch.tensor((1. - init_prob) / init_prob))
+        nn.init.constant_(self.cls_pred[-1].bias, bias_value)
 
 
     def create_grid(self, input_size):
@@ -256,10 +260,10 @@ class CenterNetPlus(nn.Module):
             txtytwth_pred = torch.cat([txty_pred, twth_pred], dim=-1)
             x1y1x2y2_pred = (self.decode_boxes(txtytwth_pred) / self.input_size).view(-1, 4)
             x1y1x2y2_gt = target[:, :, -4:].view(-1, 4)
-            iou_pred = tools.iou_score(x1y1x2y2_pred, x1y1x2y2_gt, batch_size=B)
+            iou_pred = box_ops.iou_score(x1y1x2y2_pred, x1y1x2y2_gt, batch_size=B)
 
             # compute loss
-            cls_loss, txty_loss, twth_loss, iou_loss, iou_aware_loss = tools.loss(
+            cls_loss, txty_loss, twth_loss, iou_loss, iou_aware_loss = loss.loss(
                                                                         pred_cls=cls_pred, 
                                                                         pred_txty=txty_pred, 
                                                                         pred_twth=twth_pred, 

@@ -16,6 +16,8 @@ if sys.version_info[0] == 2:
     import xml.etree.cElementTree as ET
 else:
     import xml.etree.ElementTree as ET
+from data import create_gt
+
 
 VOC_CLASSES = (  # always index 0
     'aeroplane', 'bicycle', 'bird', 'boat',
@@ -26,6 +28,7 @@ VOC_CLASSES = (  # always index 0
 
 # note: if you used our download scripts, this should be right
 VOC_ROOT = "//mnt/share/ssd2/dataset/VOCdevkit/"
+
 
 class VOCAnnotationTransform(object):
     """Transforms a VOC annotation into a Tensor of bbox coords and label index
@@ -96,6 +99,8 @@ class VOCDetection(data.Dataset):
     def __init__(self, 
                  root, 
                  img_size=None,
+                 train=False,
+                 stride=32,
                  image_sets=[('2007', 'trainval'), ('2012', 'trainval')],
                  transform=None, 
                  base_transform=None,
@@ -104,6 +109,8 @@ class VOCDetection(data.Dataset):
                  mosaic=False):
         self.root = root
         self.img_size = img_size
+        self.train = train
+        self.stride = stride
         self.image_set = image_sets
         self.transform = transform
         self.base_transform = base_transform
@@ -121,8 +128,14 @@ class VOCDetection(data.Dataset):
 
     def __getitem__(self, index):
         im, gt, h, w = self.pull_item(index)
-
-        return im, gt
+        if self.train:
+            gt_tensor = create_gt.gt_creator(img_size=self.img_size,
+                                             stride=self.stride,
+                                             num_classes=20,
+                                             label_lists=gt)
+            return im, gt_tensor
+        else:
+            return im, gt
 
 
     def __len__(self):

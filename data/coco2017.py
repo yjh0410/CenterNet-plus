@@ -10,6 +10,7 @@ try:
 except:
     print('It seems that you do not install cocoapi ...')
     pass
+from data import create_gt
 
 
 coco_class_labels = ('background',
@@ -39,13 +40,15 @@ class COCODataset(Dataset):
     """
     COCO dataset class.
     """
-    def __init__(self, data_dir='COCO', json_file='instances_train2017.json',
+    def __init__(self, 
+                 data_dir='COCO', 
+                 json_file='instances_train2017.json',
                  name='train2017', 
                  img_size=512,
+                 train=False,
+                 stride=32,
                  transform=None, 
                  base_transform=None,
-                 min_size=1, 
-                 debug=False, 
                  mosaic=False):
         """
         COCO dataset initialization. Annotation data are read into memory by COCO API.
@@ -61,14 +64,11 @@ class COCODataset(Dataset):
         self.json_file = json_file
         self.coco = COCO(self.data_dir+'annotations/'+self.json_file)
         self.ids = self.coco.getImgIds()
-        if debug:
-            self.ids = self.ids[1:2]
-            print("debug mode...", self.ids)
+        self.img_size = img_size
+        self.train = train
+        self.stride = stride
         self.class_ids = sorted(self.coco.getCatIds())
         self.name = name
-        self.max_labels = 50
-        self.img_size = img_size
-        self.min_size = min_size
         self.transform = transform
         self.base_transform = base_transform
         self.mosaic = mosaic
@@ -128,8 +128,14 @@ class COCODataset(Dataset):
 
     def __getitem__(self, index):
         im, gt, h, w = self.pull_item(index)
-
-        return im, gt
+        if self.train:
+            gt_tensor = create_gt.gt_creator(img_size=self.img_size,
+                                             stride=self.stride,
+                                             num_classes=80,
+                                             label_lists=gt)
+            return im, gt_tensor
+        else:
+            return im, gt
 
 
     def pull_item(self, index):
