@@ -58,17 +58,6 @@ class CenterNetPlus(nn.Module):
             c2, c3, c4, c5 = 256, 512, 1024, 2048
             p2, p3, p4, p5 = 256, 256, 256, 256
 
-        elif self.bk == 'd53':
-            print("Use backbone : darknet-53")
-            self.backbone = darknet53(pretrained=trainable, hr=trainable)
-            c2, c3, c4, c5 = 128, 256, 512, 1024
-            p2, p3, p4, p5 = 256, 256, 256, 256
-
-        elif self.bk == 'cspd53':
-            print("Use backbone : cspdarknet-53")
-            self.backbone = cspdarknet53(pretrained=trainable, hr=trainable)
-            c2, c3, c4, c5 = 128, 256, 512, 1024
-            p2, p3, p4, p5 = 256, 256, 256, 256
         else:
             print("Only support r18, r50, r101, rx50, rx101, d53, cspd53 as backbone !!")
             exit()

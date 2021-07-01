@@ -108,7 +108,7 @@ def train():
         dataset = VOCDetection(root=data_dir, 
                                 img_size=train_size,
                                 train=True,
-                                stride=32,
+                                stride=4,
                                 transform=SSDAugmentation(train_size),
                                 base_transform=ColorAugmentation(train_size),
                                 mosaic=args.mosaic
@@ -127,7 +127,7 @@ def train():
                     data_dir=data_dir,
                     img_size=train_size,
                     train=True,
-                    stride=32,
+                    stride=4,
                     transform=SSDAugmentation(train_size),
                     base_transform=ColorAugmentation(train_size),
                     mosaic=args.mosaic
