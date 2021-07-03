@@ -7,7 +7,6 @@ from data import BaseTransform, VOC_CLASSES, coco_class_index, coco_class_labels
 from data import config
 import numpy as np
 import cv2
-import tools
 import time
 
 

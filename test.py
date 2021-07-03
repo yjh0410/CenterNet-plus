@@ -6,7 +6,6 @@ import torch.backends.cudnn as cudnn
 from data import *
 import numpy as np
 import cv2
-import tools
 import time
 
 
