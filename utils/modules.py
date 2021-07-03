@@ -6,37 +6,26 @@ from copy import deepcopy
 
 
 class Conv(nn.Module):
-    def __init__(self, c1, c2, k, s=1, p=0, d=1, g=1, act=True):
+    def __init__(self, c1, c2, k, s=1, p=0, d=1, g=1, act='relu'):
         super(Conv, self).__init__()
-        self.convs = nn.Sequential(
-            nn.Conv2d(c1, c2, k, stride=s, padding=p, dilation=d, groups=g, bias=False),
-            nn.BatchNorm2d(c2),
-            nn.ReLU(inplace=True) if act else nn.Identity()
-        )
-
-    def forward(self, x):
-        return self.convs(x)
-
-
-class DeConv(nn.Module):
-    def __init__(self, in_channels, out_channels, ksize, stride=2, act=True):
-        super(DeConv, self).__init__()
-        # deconv basic config
-        if ksize == 4:
-            padding = 1
-            output_padding = 0
-        elif ksize == 3:
-            padding = 1
-            output_padding = 1
-        elif ksize == 2:
-            padding = 0
-            output_padding = 0
-
-        self.convs = nn.Sequential(
-            nn.ConvTranspose2d(in_channels, out_channels, ksize, stride=stride, padding=padding, output_padding=output_padding),
-            nn.BatchNorm2d(out_channels),
-            nn.ReLU(inplace=True) if act else nn.Identity()
-        )
+        if act is not None:
+            if act == 'relu':
+                self.convs = nn.Sequential(
+                    nn.Conv2d(c1, c2, k, stride=s, padding=p, dilation=d, groups=g, bias=False),
+                    nn.BatchNorm2d(c2),
+                    nn.ReLU(inplace=True) if act else nn.Identity()
+                )
+            elif act == 'leaky':
+                self.convs = nn.Sequential(
+                    nn.Conv2d(c1, c2, k, stride=s, padding=p, dilation=d, groups=g, bias=False),
+                    nn.BatchNorm2d(c2),
+                    nn.LeakyReLU(0.1, inplace=True) if act else nn.Identity()
+                )
+        else:
+            self.convs = nn.Sequential(
+                nn.Conv2d(c1, c2, k, stride=s, padding=p, dilation=d, groups=g, bias=False),
+                nn.BatchNorm2d(c2)
+            )
 
     def forward(self, x):
         return self.convs(x)
@@ -56,10 +45,10 @@ class UpSample(nn.Module):
 
 
 class ResizeConv(nn.Module):
-    def __init__(self, in_ch, out_ch, size=None, scale_factor=None, mode='nearest', align_corner=None):
+    def __init__(self, c1, c2, act='relu', size=None, scale_factor=None, mode='nearest', align_corner=None):
         super(ResizeConv, self).__init__()
         self.upsample = UpSample(size=size, scale_factor=scale_factor, mode=mode, align_corner=align_corner)
-        self.conv = Conv(in_ch, out_ch, k=1)
+        self.conv = Conv(c1, c2, k=1, act=act)
 
     def forward(self, x):
         x = self.conv(self.upsample(x))
@@ -68,13 +57,13 @@ class ResizeConv(nn.Module):
 
 class Bottleneck(nn.Module):
     # Standard bottleneck
-    def __init__(self, in_ch, dilation=1, e=0.5):
+    def __init__(self, c, d=1, e=0.5, act='relu'):
         super(Bottleneck, self).__init__()
-        inter_ch = int(in_ch * e)
+        c_ = int(c * e)
         self.branch = nn.Sequential(
-            Conv(in_ch, inter_ch, k=1),
-            Conv(inter_ch, inter_ch, k=3, p=dilation, d=dilation),
-            Conv(inter_ch, in_ch, k=1)
+            Conv(c, c_, k=1, act=act),
+            Conv(c_, c_, k=3, p=d, d=d, act=act),
+            Conv(c_, c, k=1, act=act)
         )
 
     def forward(self, x):
@@ -83,15 +72,15 @@ class Bottleneck(nn.Module):
 
 class DilateEncoder(nn.Module):
     """ DilateEncoder """
-    def __init__(self, in_ch, out_ch, dilation_list=[2, 4, 6, 8]):
+    def __init__(self, c1, c2, act='relu', dilation_list=[2, 4, 6, 8]):
         super(DilateEncoder, self).__init__()
         self.projector = nn.Sequential(
-            Conv(in_ch, out_ch, k=1, act=False),
-            Conv(out_ch, out_ch, k=3, p=1, act=False)
+            Conv(c1, c2, k=1, act=None),
+            Conv(c2, c2, k=3, p=1, act=None)
         )
         encoders = []
         for d in dilation_list:
-            encoders.append(Bottleneck(in_ch=out_ch, dilation=d))
+            encoders.append(Bottleneck(c=c2, d=d, act=act))
         self.encoders = nn.Sequential(*encoders)
 
     def forward(self, x):
@@ -105,22 +94,27 @@ class SPP(nn.Module):
     """
         Spatial Pyramid Pooling
     """
-    def __init__(self):
+    def __init__(self, c1, c2, e=0.5, act='relu'):
         super(SPP, self).__init__()
+        c_ = int(c1 * e)
+        self.cv1 = Conv(c1, c_, k=1, act=act)
+        self.cv2 = Conv(c_*4, c2, k=1, act=act)
 
     def forward(self, x):
+        x = self.cv1(x)
         x_1 = F.max_pool2d(x, 5, stride=1, padding=2)
         x_2 = F.max_pool2d(x, 9, stride=1, padding=4)
         x_3 = F.max_pool2d(x, 13, stride=1, padding=6)
         x = torch.cat([x, x_1, x_2, x_3], dim=1)
+        x = self.cv2(x)
 
         return x
 
 
 class CoordConv(nn.Module):
-    def __init__(self, in_ch, out_ch, k=1, p=0, s=1, d=1, g=1, act=True):
+    def __init__(self, c1, c2, k=1, p=0, s=1, d=1, g=1, act='relu'):
         super(CoordConv, self).__init__()
-        self.conv = Conv(in_ch + 2, out_ch, k=k, p=p, s=s, d=d, g=g, act=act)
+        self.conv = Conv(c1 + 2, c2, k=k, p=p, s=s, d=d, g=g, act=act)
 
     def forward(self, x):
         """CoordConv.

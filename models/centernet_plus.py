@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from utils import Conv, ResizeConv, DilateEncoder
+from utils import Conv, ResizeConv, DilateEncoder, SPP
 from utils import box_ops, loss
 from backbone import *
 import numpy as np
@@ -33,30 +33,35 @@ class CenterNetPlus(nn.Module):
             self.backbone = resnet18(pretrained=trainable)
             c2, c3, c4, c5 = 64, 128, 256, 512
             p2, p3, p4, p5 = 256, 256, 256, 256
+            act = 'relu'
         
         elif self.bk == 'r50':
             print("Use backbone : resnet-50")
             self.backbone = resnet50(pretrained=trainable)
             c2, c3, c4, c5 = 256, 512, 1024, 2048
             p2, p3, p4, p5 = 256, 256, 256, 256
+            act = 'relu'
 
         elif self.bk == 'r101':
             print("Use backbone : resnet-101")
             self.backbone = resnet101(pretrained=trainable)
             c2, c3, c4, c5 = 256, 512, 1024, 2048
             p2, p3, p4, p5 = 256, 256, 256, 256
+            act = 'relu'
 
         elif self.bk == 'rx50':
             print("Use backbone : resnext-50")
             self.backbone = resnext50_32x4d(pretrained=trainable)
             c2, c3, c4, c5 = 256, 512, 1024, 2048
             p2, p3, p4, p5 = 256, 256, 256, 256
+            act = 'relu'
 
         elif self.bk == 'rx101':
             print("Use backbone : resnext-101")
             self.backbone = resnext101_32x8d(pretrained=trainable)
             c2, c3, c4, c5 = 256, 512, 1024, 2048
             p2, p3, p4, p5 = 256, 256, 256, 256
+            act = 'relu'
 
         else:
             print("Only support r18, r50, r101, rx50, rx101, d53, cspd53 as backbone !!")
@@ -64,40 +69,40 @@ class CenterNetPlus(nn.Module):
             
         # neck
         # # dilate encoder
-        self.neck = DilateEncoder(in_ch=c5, out_ch=p5)
+        self.neck = DilateEncoder(c1=c5, c2=p5, act=act)
 
         # upsample
-        self.deconv4 = ResizeConv(in_ch=p5, out_ch=p4, scale_factor=2) # 32 -> 16
-        self.latter4 = Conv(c4, p4, k=1, act=False)
-        self.smooth4 = Conv(p4, p4, k=3, p=1)
+        self.deconv4 = ResizeConv(c1=p5, c2=p4, act=act, scale_factor=2) # 32 -> 16
+        self.latter4 = Conv(c4, p4, k=1, act=None)
+        self.smooth4 = Conv(p4, p4, k=3, p=1, act=act)
 
-        self.deconv3 = ResizeConv(in_ch=p4, out_ch=p3, scale_factor=2) # 16 -> 8
-        self.latter3 = Conv(c3, p3, k=1, act=False)
-        self.smooth3 = Conv(p3, p3, k=3, p=1)
+        self.deconv3 = ResizeConv(c1=p4, c2=p3, act=act, scale_factor=2) # 16 -> 8
+        self.latter3 = Conv(c3, p3, k=1, act=None)
+        self.smooth3 = Conv(p3, p3, k=3, p=1, act=act)
 
-        self.deconv2 = ResizeConv(in_ch=p3, out_ch=p2, scale_factor=2) #  8 -> 4
-        self.latter2 = Conv(c2, p2, k=1, act=False)
-        self.smooth2 = Conv(p2, p2, k=3, p=1)
+        self.deconv2 = ResizeConv(c1=p3, c2=p2, act=act, scale_factor=2) #  8 -> 4
+        self.latter2 = Conv(c2, p2, k=1, act=None)
+        self.smooth2 = Conv(p2, p2, k=3, p=1, act=act)
         
 
         # detection head
         self.cls_pred = nn.Sequential(
-            Conv(p2, 64, k=3, p=1),
+            Conv(p2, 64, k=3, p=1, act=act),
             nn.Conv2d(64, self.num_classes, kernel_size=1)
         )
 
         self.txty_pred = nn.Sequential(
-            Conv(p2, 64, k=3, p=1),
+            Conv(p2, 64, k=3, p=1, act=act),
             nn.Conv2d(64, 2, kernel_size=1)
         )
        
         self.twth_pred = nn.Sequential(
-            Conv(p2, 64, k=3, p=1),
+            Conv(p2, 64, k=3, p=1, act=act),
             nn.Conv2d(64, 2, kernel_size=1)
         )
 
         self.iou_aware_pred = nn.Sequential(
-            Conv(p2, 64, k=3, p=1),
+            Conv(p2, 64, k=3, p=1, act=act),
             nn.Conv2d(64, 1, kernel_size=1)
         )
 
