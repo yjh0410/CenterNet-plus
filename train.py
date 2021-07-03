@@ -12,7 +12,6 @@ import torch.optim as optim
 import torch.backends.cudnn as cudnn
 
 from data import *
-import tools
 
 from utils.augmentations import SSDAugmentation, ColorAugmentation
 from utils.cocoapi_evaluator import COCOAPIEvaluator
