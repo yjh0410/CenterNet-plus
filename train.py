@@ -213,7 +213,7 @@ def train():
 
     max_epoch = cfg['max_epoch']
     epoch_size = len(dataset) // args.batch_size
-    best_ap = -1.
+    best_map = -1.
 
     t0 = time.time()
     # start training loop
