@@ -22,7 +22,7 @@ from utils.modules import ModelEMA
 def parse_args():
     parser = argparse.ArgumentParser(description='CenterNet-plus Detection')
     parser.add_argument('-v', '--version', default='centernet_plus',
-                        help='centernet_plus')
+                        help='centernet_plus, baseline')
     parser.add_argument('-bk', '--backbone', default='r18',
                         help='r18, r34, r50, r101')
     parser.add_argument('-d', '--dataset', default='voc',
@@ -168,8 +168,18 @@ def train():
                           num_classes=num_classes, 
                           trainable=True, 
                           backbone=args.backbone)
-        print('Let us train centernet on the %s dataset ......' % (args.dataset))
+        print('Let us train centernet-plus on the %s dataset ......' % (args.dataset))
 
+    elif args.version == 'baseline':
+        from models.baseline import Baseline
+        
+        net = Baseline(device=device, 
+                          input_size=train_size, 
+                          num_classes=num_classes, 
+                          trainable=True, 
+                          backbone=args.backbone)
+
+        print('Let us train baseline on the %s dataset ......' % (args.dataset))
     else:
         print('Unknown version !!!')
         exit()
