@@ -89,10 +89,10 @@ def loss_base(pred_cls, pred_txty, pred_twth, label, num_classes):
     twth_loss = torch.sum(torch.sum(twth_loss_function(pred_twth, gt_twth), dim=-1) * gt_box_scale_weight) / batch_size
 
     # iou loss (For baseline model, we dont consider iou loss)
-    iou_loss = torch.tensor([0], requires_grad=False)
+    iou_loss = torch.tensor([0], requires_grad=False).to(pred_txty.device)
 
     # iou aware loss (For baseline model, we dont consider iou-aware loss)
-    iou_aware_loss = torch.tensor([0], requires_grad=False)
+    iou_aware_loss = torch.tensor([0], requires_grad=False).to(pred_txty.device)
 
     return cls_loss, txty_loss, twth_loss, iou_loss, iou_aware_loss
 
