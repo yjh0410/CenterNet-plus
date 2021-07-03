@@ -55,32 +55,16 @@ In all ablation studies, unless otherwise specified, the backbone is ResNet-18.
 During training stage, batch size is set as 32 and initial learning rate is set as 0.001. 
 We resize the input image to 512x512. The basic loss function consists of cls loss(heatmap) and reg loss(txty, twth).
 
-#### 1. SPP vs DilatedEncoder
-
 <table><tbody>
 <tr><th align="left" bgcolor=#f8f8f8> </th>     <td bgcolor=white> AP </td><td bgcolor=white> AP50 </td><td bgcolor=white> AP75 </td><td bgcolor=white> AP_S </td><td bgcolor=white> AP_M </td><td bgcolor=white> AP_L </td></tr>
 
-<tr><th align="left" bgcolor=#f8f8f8> SPP </th><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> Baseline </th><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
 
-<tr><th align="left" bgcolor=#f8f8f8> DilatedEncoder</th><td bgcolor=white> 28.4 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> + DilatedEncoder</th><td bgcolor=white> 28.4 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
 
-</table></tbody>
+<tr><th align="left" bgcolor=#f8f8f8> + IoU loss </th><td bgcolor=white> 29.4 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
 
-#### 2. IoU loss
-
-<table><tbody>
-<tr><th align="left" bgcolor=#f8f8f8> </th>     <td bgcolor=white> AP </td><td bgcolor=white> AP50 </td><td bgcolor=white> AP75 </td><td bgcolor=white> AP_S </td><td bgcolor=white> AP_M </td><td bgcolor=white> AP_L </td></tr>
-
-<tr><th align="left" bgcolor=#f8f8f8> IoU loss </th><td bgcolor=white> 29.4 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
-
-</table></tbody>
-
-#### 3. IoU-aware
-
-<table><tbody>
-<tr><th align="left" bgcolor=#f8f8f8> </th>     <td bgcolor=white> AP </td><td bgcolor=white> AP50 </td><td bgcolor=white> AP75 </td><td bgcolor=white> AP_S </td><td bgcolor=white> AP_M </td><td bgcolor=white> AP_L </td></tr>
-
-<tr><th align="left" bgcolor=#f8f8f8> IoU-aware loss </th><td bgcolor=white> 29.9 </td><td bgcolor=white> 49.1 </td><td bgcolor=white> 31.8 </td><td bgcolor=white> 14.4 </td><td bgcolor=white> 31.0 </td><td bgcolor=white> 43.1 </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> + IoU-aware loss </th><td bgcolor=white> 29.9 </td><td bgcolor=white> 49.1 </td><td bgcolor=white> 31.8 </td><td bgcolor=white> 14.4 </td><td bgcolor=white> 31.0 </td><td bgcolor=white> 43.1 </td></tr>
 
 </table></tbody>
 
