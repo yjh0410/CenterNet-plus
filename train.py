@@ -304,7 +304,8 @@ def train():
                 # save model
                 print('Saving state, epoch:', epoch + 1)
                 torch.save(model_eval.state_dict(), os.path.join(path_to_save, 
-                            args.version + '_' + repr(epoch + 1) + '_' + str(round(best_map, 2)) + '.pth')
+                            args.version + '_' + repr(epoch + 1) + '_' + str(round(best_map, 2)) + '.pth'),
+                            __use_new_zipfile_serialization=False
                             )  
             if args.tfboard:
                 if args.dataset == 'voc':
@@ -317,13 +318,6 @@ def train():
             model_eval.trainable = True
             model_eval.set_grid(train_size)
             model_eval.train()
-
-            # save model
-            print('Saving state, epoch:', epoch + 1)
-            torch.save(model_eval.state_dict(), os.path.join(path_to_save, 
-                        args.version + '_' + repr(epoch + 1) + '.pth'),
-                        _use_new_zipfile_serialization=False
-                        )  
 
 
 def set_lr(optimizer, lr):
