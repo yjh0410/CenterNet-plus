@@ -58,7 +58,7 @@ We resize the input image to 512x512. The basic loss function consists of cls lo
 <table><tbody>
 <tr><th align="left" bgcolor=#f8f8f8> </th>     <td bgcolor=white> AP </td><td bgcolor=white> AP50 </td><td bgcolor=white> AP75 </td><td bgcolor=white> AP_S </td><td bgcolor=white> AP_M </td><td bgcolor=white> AP_L </td></tr>
 
-<tr><th align="left" bgcolor=#f8f8f8> Baseline </th><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> Baseline </th><td bgcolor=white> 25.7 </td><td bgcolor=white> 44.7 </td><td bgcolor=white> 26.8 </td><td bgcolor=white> 13.3 </td><td bgcolor=white> 28.7 </td><td bgcolor=white> 35.8 </td></tr>
 
 <tr><th align="left" bgcolor=#f8f8f8> + DilatedEncoder</th><td bgcolor=white> 28.4 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
 

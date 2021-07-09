@@ -69,8 +69,9 @@ class Baseline(nn.Module):
             
         # neck
         # # dilate encoder
-        self.neck = Conv(c1=c5, c2=p5, k=1, act=act)
-
+        # self.neck = Conv(c1=c5, c2=p5, k=1, act=act)
+        self.neck = DilateEncoder(c1=c5, c2=p5, act=act)
+        
         # upsample
         self.deconv4 = ResizeConv(c1=p5, c2=p4, act=act, scale_factor=2) # 32 -> 16
         self.latter4 = Conv(c4, p4, k=1, act=None)
