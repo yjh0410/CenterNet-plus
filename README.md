@@ -53,7 +53,10 @@ python train.py -d coco --cuda --ema -bk r18
 ### Ablation study
 In all ablation studies, unless otherwise specified, the backbone is ResNet-18.
 During training stage, batch size is set as 32 and initial learning rate is set as 0.001. 
-We resize the input image to 512x512. The basic loss function consists of cls loss(heatmap) and reg loss(txty, twth).
+We resize the input image to 512x512. 
+
+For the baseline model, it consists of backbone and head without DilatedEncoder.
+We just use a 1x1 conv layer for neck. The basic loss function consists of cls loss(heatmap) and reg loss(txty, twth).
 
 <table><tbody>
 <tr><th align="left" bgcolor=#f8f8f8> </th>     <td bgcolor=white> AP </td><td bgcolor=white> AP50 </td><td bgcolor=white> AP75 </td><td bgcolor=white> AP_S </td><td bgcolor=white> AP_M </td><td bgcolor=white> AP_L </td></tr>
