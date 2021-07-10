@@ -305,7 +305,7 @@ def train():
                 print('Saving state, epoch:', epoch + 1)
                 torch.save(model_eval.state_dict(), os.path.join(path_to_save, 
                             args.version + '_' + repr(epoch + 1) + '_' + str(round(best_map, 2)) + '.pth'),
-                            __use_new_zipfile_serialization=False
+                            _use_new_zipfile_serialization=False
                             )  
             if args.tfboard:
                 if args.dataset == 'voc':
