@@ -63,11 +63,11 @@ We just use a 1x1 conv layer for neck. The basic loss function consists of cls l
 
 <tr><th align="left" bgcolor=#f8f8f8> Baseline </th><td bgcolor=white> 25.7 </td><td bgcolor=white> 44.7 </td><td bgcolor=white> 26.8 </td><td bgcolor=white> 13.3 </td><td bgcolor=white> 28.7 </td><td bgcolor=white> 35.8 </td></tr>
 
-<tr><th align="left" bgcolor=#f8f8f8> + DilatedEncoder</th><td bgcolor=white> 28.4 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> + DilatedEncoder</th><td bgcolor=white> 30.0 </td><td bgcolor=white> 49.7 </td><td bgcolor=white> 31.8 </td><td bgcolor=white> 14.2 </td><td bgcolor=white> 31.5 </td><td bgcolor=white> 43.6 </td></tr>
 
-<tr><th align="left" bgcolor=#f8f8f8> + IoU loss </th><td bgcolor=white> 29.4 </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> + IoU loss </th><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
 
-<tr><th align="left" bgcolor=#f8f8f8> + IoU-aware loss </th><td bgcolor=white> 29.9 </td><td bgcolor=white> 49.1 </td><td bgcolor=white> 31.8 </td><td bgcolor=white> 14.4 </td><td bgcolor=white> 31.0 </td><td bgcolor=white> 43.1 </td></tr>
+<tr><th align="left" bgcolor=#f8f8f8> + IoU-aware loss </th><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
 
 </table></tbody>
 
