@@ -248,6 +248,10 @@ def train():
             # loss
             total_loss = cls_loss + txty_loss + twth_loss + iou_loss + iou_aware_loss
 
+            # check NAN
+            if torch.isnan(total_loss):
+                continue
+            
             # backprop
             total_loss.backward()        
             optimizer.step()
