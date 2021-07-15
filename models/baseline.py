@@ -254,6 +254,7 @@ class Baseline(nn.Module):
                                                                         pred_cls=cls_pred, 
                                                                         pred_txty=txty_pred, 
                                                                         pred_twth=twth_pred, 
+                                                                        pred_iou=iou_pred,
                                                                         label=target, 
                                                                         num_classes=self.num_classes
                                                                         )
