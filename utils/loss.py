@@ -71,7 +71,7 @@ def loss_base(pred_cls, pred_txty, pred_twth, pred_iou, label, num_classes):
     cls_loss_function = HeatmapLoss(reduction='mean')
     txty_loss_function = nn.BCEWithLogitsLoss(reduction='none')
     twth_loss_function = nn.SmoothL1Loss(reduction='none')
-    iou_loss_function = nn.SmoothL1Loss(reduction='none')
+    # iou_loss_function = nn.SmoothL1Loss(reduction='none')
 
     # groundtruth    
     gt_cls = label[:, :, :num_classes]
@@ -90,7 +90,7 @@ def loss_base(pred_cls, pred_txty, pred_twth, pred_iou, label, num_classes):
     twth_loss = torch.sum(torch.sum(twth_loss_function(pred_twth, gt_twth), dim=-1) * gt_box_scale_weight) / batch_size
 
     # iou loss
-    iou_loss = torch.sum(iou_loss_function(pred_iou, gt_iou) * gt_mask) / batch_size
+    iou_loss = torch.tensor([0], requires_grad=False).to(pred_txty.device) #torch.sum(iou_loss_function(pred_iou, gt_iou) * gt_mask) / batch_size
 
     # iou aware loss (For baseline model, we dont consider iou-aware loss)
     iou_aware_loss = torch.tensor([0], requires_grad=False).to(pred_txty.device)
