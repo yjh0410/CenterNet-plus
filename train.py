@@ -93,7 +93,20 @@ def train():
         print('use Mosaic Augmentation ...')
 
     # config
-    cfg = train_cfg
+    model_name = args.version
+    print('Model name: ', model_name)
+    
+    if model_name == 'baseline':
+        from models.baseline import Baseline as centernet
+        cfg = train_baseline_cfg
+    
+    elif model_name == 'centernet_plus':
+        from models.centernet_plus import CenterNetPlus as centernet
+        cfg = train_cfg
+
+    else:
+        print('Unknown version !!!')
+        exit()
 
     # img_size
     train_size = cfg['train_size']
@@ -158,31 +171,12 @@ def train():
                     pin_memory=True
                     )
 
-    # build model
-    if args.version == 'centernet_plus':
-        from models.centernet_plus import CenterNetPlus
-        
-        net = CenterNetPlus(device=device, 
-                          input_size=train_size, 
-                          num_classes=num_classes, 
-                          trainable=True, 
-                          backbone=args.backbone)
-        print('Let us train centernet-plus on the %s dataset ......' % (args.dataset))
-
-    elif args.version == 'baseline':
-        from models.baseline import Baseline
-        
-        net = Baseline(device=device, 
-                          input_size=train_size, 
-                          num_classes=num_classes, 
-                          trainable=True, 
-                          backbone=args.backbone)
-
-        print('Let us train baseline on the %s dataset ......' % (args.dataset))
-    else:
-        print('Unknown version !!!')
-        exit()
-
+    # build model        
+    net = centernet(device=device, 
+                        input_size=train_size, 
+                        num_classes=num_classes, 
+                        trainable=True, 
+                        backbone=args.backbone)
     model = net
     model.to(device).train()
     ema = ModelEMA(model) if args.ema else None
