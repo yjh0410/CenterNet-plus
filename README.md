@@ -50,29 +50,6 @@ python train.py -d coco --cuda --ema -bk r18
 
 ## Experimental results
 
-### Ablation study
-In all ablation studies, unless otherwise specified, the backbone is ResNet-18.
-During training stage, batch size is set as 32 and initial learning rate is set as 0.001. 
-We resize the input image to 512x512. 
-
-For the baseline model, it consists of backbone and head without DilatedEncoder.
-We just use a 1x1 conv layer for neck. The basic loss function consists of cls loss(heatmap) and reg loss(txty, twth).
-
-We train the baseline with 150 epochs. We don't use EMA trick during ablation study.
-
-<table><tbody>
-<tr><th align="left" bgcolor=#f8f8f8> </th>     <td bgcolor=white> AP </td><td bgcolor=white> AP50 </td><td bgcolor=white> AP75 </td><td bgcolor=white> AP_S </td><td bgcolor=white> AP_M </td><td bgcolor=white> AP_L </td></tr>
-
-<tr><th align="left" bgcolor=#f8f8f8> Baseline </th><td bgcolor=white>  </td><td bgcolor=white>  </td><td bgcolor=white>  </td><td bgcolor=white>  </td><td bgcolor=white>  </td><td bgcolor=white>  </td></tr>
-
-<tr><th align="left" bgcolor=#f8f8f8> + DilatedEncoder</th><td bgcolor=white>  </td><td bgcolor=white>  </td><td bgcolor=white>  </td><td bgcolor=white>  </td><td bgcolor=white>  </td><td bgcolor=white>  </td></tr>
-
-<tr><th align="left" bgcolor=#f8f8f8> + IoU loss </th><td bgcolor=white>  </td><td bgcolor=white>  </td><td bgcolor=white>  </td><td bgcolor=white>  </td><td bgcolor=white>  </td><td bgcolor=white>  </td></tr>
-
-<tr><th align="left" bgcolor=#f8f8f8> + IoU-aware loss </th><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td><td bgcolor=white> - </td></tr>
-
-</table></tbody>
-
 ### COCO
 Experimental results on COCO:
 
