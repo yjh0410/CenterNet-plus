@@ -85,8 +85,8 @@ def test(net, device, testset, transform, thresh, class_colors=None, class_names
         img_processed = vis(img, bboxes, scores, cls_inds, thresh, class_colors, class_names, class_indexs, dataset)
         cv2.imshow('detection', img_processed)
         cv2.waitKey(0)
-        # print('Saving the' + str(index) + '-th image ...')
-        # cv2.imwrite('test_images/' + args.dataset+ '3/' + str(index).zfill(6) +'.jpg', img)
+        print('Saving the' + str(index) + '-th image ...')
+        cv2.imwrite('test_images/' + args.dataset+ '3/' + str(index).zfill(6) +'.jpg', img)
 
 
 if __name__ == '__main__':
