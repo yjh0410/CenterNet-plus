@@ -63,6 +63,9 @@ def vis(img, bboxes, scores, cls_inds, thresh, class_colors, class_names, class_
 
 def test(net, device, testset, transform, thresh, class_colors=None, class_names=None, class_indexs=None, dataset='voc'):
     num_images = len(testset)
+    save_path = os.path.join('det_results/', args.dataset, args.version)
+    os.makedirs(save_path, exist_ok=True)
+
     for index in range(num_images):
         print('Testing image {:d}/{:d}....'.format(index+1, num_images))
         img, _ = testset.pull_image(index)
@@ -86,7 +89,7 @@ def test(net, device, testset, transform, thresh, class_colors=None, class_names
         cv2.imshow('detection', img_processed)
         cv2.waitKey(0)
         print('Saving the' + str(index) + '-th image ...')
-        cv2.imwrite('test_images/' + args.dataset+ '3/' + str(index).zfill(6) +'.jpg', img)
+        cv2.imwrite(os.path.join(save_path, str(index).zfill(6) +'.jpg'), img)
 
 
 if __name__ == '__main__':
