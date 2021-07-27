@@ -20,9 +20,9 @@ parser.add_argument('-size', '--input_size', default=512, type=int,
                     help='input_size')
 parser.add_argument('--trained_model', default='weight/',
                     type=str, help='Trained state_dict file path to open')
-parser.add_argument('-vs', '--visual_threshold', default=0.3, type=float,
+parser.add_argument('-vs', '--visual_threshold', default=0.25, type=float,
                     help='Final confidence threshold')
-parser.add_argument('--conf_thresh', default=0.3, type=float,
+parser.add_argument('--conf_thresh', default=0.25, type=float,
                     help='Confidence threshold')
 parser.add_argument('--nms_thresh', default=0.45, type=float,
                     help='NMS threshold')
