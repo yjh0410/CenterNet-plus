@@ -73,18 +73,3 @@ Experimental results on COCO:
 </table></tbody>
 
 With ResNet backbone, my CenterNet-plus works better.
-
-## Things I tried that did not work
-- multi scale training
-- mosaic augmentation
-
-When I use multi-scale training trick, my CenterNet-plus with ResNet18 got 25 AP lower than 29.9 AP.
-
-When I use mosaic augmentation, my CenterNet-plus with ResNet18 got only 25 AP.
-
-## What I am going to do next?
-- Replace txtytwth by GIoU to learning regression.
-- Add more positive samples to accelerated training.
-- Large image size: 640.
-- Try DLA-34 backbone.
-- DDP training mode.
