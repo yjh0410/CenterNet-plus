@@ -173,7 +173,6 @@ if __name__ == '__main__':
     test(net=net, 
         device=device, 
         testset=dataset,
-        num_classes=num_classes,
         transform=BaseTransform(input_size),
         vis_thresh=args.visual_threshold,
         class_colors=class_colors,
