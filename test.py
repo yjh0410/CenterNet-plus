@@ -23,6 +23,8 @@ parser.add_argument('--topk', default=100, type=int,
                     help='input_size')
 parser.add_argument('--trained_model', default='weight/',
                     type=str, help='Trained state_dict file path to open')
+parser.add_argument('--show', action='store_true', default=False,
+                    help='show the visulization results.')
 parser.add_argument('-vs', '--visual_threshold', default=0.5, type=float,
                     help='Final confidence threshold')
 parser.add_argument('--nms_thresh', default=0.45, type=float,
@@ -74,7 +76,8 @@ def test(net,
          vis_thresh, 
          class_colors=None, 
          class_names=None, 
-         class_indexs=None, 
+         class_indexs=None,
+         show=False,
          dataset='voc'):
     num_images = len(testset)
     save_path = os.path.join(args.save_folder, args.dataset, args.version)
@@ -111,8 +114,9 @@ def test(net,
                             class_indexs=class_indexs,
                             dataset=dataset
                             )
-        cv2.imshow('detection', img_processed)
-        cv2.waitKey(0)
+        if show:
+            cv2.imshow('detection', img_processed)
+            cv2.waitKey(0)
         # save result
         cv2.imwrite(os.path.join(save_path, str(index).zfill(6) +'.jpg'), img_processed)
 
@@ -178,5 +182,6 @@ if __name__ == '__main__':
         class_colors=class_colors,
         class_names=class_names,
         class_indexs=class_indexs,
+        show=args.show,
         dataset=args.dataset
         )
