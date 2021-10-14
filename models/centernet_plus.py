@@ -101,10 +101,10 @@ class CenterNetPlus(nn.Module):
             nn.Conv2d(64, 2, kernel_size=1)
         )
 
-        self.iou_aware_pred = nn.Sequential(
-            Conv(p2, 64, k=3, p=1, act=act),
-            nn.Conv2d(64, 1, kernel_size=1)
-        )
+        # self.iou_aware_pred = nn.Sequential(
+        #     Conv(p2, 64, k=3, p=1, act=act),
+        #     nn.Conv2d(64, 1, kernel_size=1)
+        # )
 
         # init weight of cls_pred
         init_prob = 0.01
@@ -237,7 +237,7 @@ class CenterNetPlus(nn.Module):
         cls_pred = self.cls_pred(p2)
         txty_pred = self.txty_pred(p2)
         twth_pred = self.twth_pred(p2)
-        iou_aware_pred = self.iou_aware_pred(p2)
+        # iou_aware_pred = self.iou_aware_pred(p2)
         
         # train
         if self.trainable:
@@ -247,8 +247,8 @@ class CenterNetPlus(nn.Module):
             txty_pred = txty_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 2)
             # [B, H*W, 2]
             twth_pred = twth_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 2)
-            # # [B, H*W, 1]
-            iou_aware_pred = iou_aware_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 1)
+            # # # [B, H*W, 1]
+            # iou_aware_pred = iou_aware_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 1)
 
             # compute iou between pred bboxes and gt bboxes
             txtytwth_pred = torch.cat([txty_pred, twth_pred], dim=-1)
@@ -273,8 +273,8 @@ class CenterNetPlus(nn.Module):
         else:
             with torch.no_grad():
                 # batch_size = 1
-                cls_pred = torch.sqrt(torch.sigmoid(cls_pred) * torch.sigmoid(iou_aware_pred))
-
+                # cls_pred = torch.sqrt(torch.sigmoid(cls_pred) * torch.sigmoid(iou_aware_pred))
+                cls_pred = torch.sigmoid(cls_pred)
                 # # visual class prediction
                 # self.vis_fmap(p2[0], normal=True, name='p2')    
                 # self.vis_fmap(p3[0], normal=True, name='p3')    
