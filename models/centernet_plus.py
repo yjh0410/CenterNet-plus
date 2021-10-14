@@ -273,7 +273,7 @@ class CenterNetPlus(nn.Module):
         else:
             with torch.no_grad():
                 # batch_size = 1
-                cls_pred = torch.sigmoid(cls_pred) * torch.sigmoid(iou_aware_pred)
+                cls_pred = torch.sqrt(torch.sigmoid(cls_pred) * torch.sigmoid(iou_aware_pred))
 
                 # # visual class prediction
                 # self.vis_fmap(p2[0], normal=True, name='p2')    
