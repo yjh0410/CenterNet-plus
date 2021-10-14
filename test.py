@@ -23,7 +23,7 @@ parser.add_argument('--topk', default=100, type=int,
                     help='input_size')
 parser.add_argument('--trained_model', default='weight/',
                     type=str, help='Trained state_dict file path to open')
-parser.add_argument('-vs', '--visual_threshold', default=0.3, type=float,
+parser.add_argument('-vs', '--visual_threshold', default=0.5, type=float,
                     help='Final confidence threshold')
 parser.add_argument('--nms_thresh', default=0.45, type=float,
                     help='NMS threshold')
