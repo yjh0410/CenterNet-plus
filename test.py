@@ -1,5 +1,6 @@
 import os
 import argparse
+from numpy import random
 import torch
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
@@ -9,7 +10,7 @@ import cv2
 import time
 
 
-parser = argparse.ArgumentParser(description='CenterNet-plus Detection')
+parser = argparse.ArgumentParser(description='CenterNet-Plus')
 parser.add_argument('-v', '--version', default='centernet_plus',
                     help='centernet_plus')
 parser.add_argument('-bk', '--backbone', default='r18',
@@ -18,52 +19,65 @@ parser.add_argument('-d', '--dataset', default='voc',
                     help='voc, coco-val.')
 parser.add_argument('-size', '--input_size', default=512, type=int,
                     help='input_size')
+parser.add_argument('--topk', default=100, type=int,
+                    help='input_size')
 parser.add_argument('--trained_model', default='weight/',
                     type=str, help='Trained state_dict file path to open')
-parser.add_argument('-vs', '--visual_threshold', default=0.25, type=float,
+parser.add_argument('-vs', '--visual_threshold', default=0.3, type=float,
                     help='Final confidence threshold')
-parser.add_argument('--conf_thresh', default=0.25, type=float,
-                    help='Confidence threshold')
 parser.add_argument('--nms_thresh', default=0.45, type=float,
                     help='NMS threshold')
 parser.add_argument('--cuda', action='store_true', default=False, 
                     help='use cuda.')
 parser.add_argument('-nms', '--use_nms', action='store_true', default=False,
                     help='use nms.')
+parser.add_argument('--save_folder', default='det_results/', type=str,
+                    help='Dir to save results')
 
 args = parser.parse_args()
 
 
-def vis(img, bboxes, scores, cls_inds, thresh, class_colors, class_names, class_indexs=None, dataset='voc'):
-    if dataset == 'voc':
-        for i, box in enumerate(bboxes):
-            cls_indx = cls_inds[i]
-            xmin, ymin, xmax, ymax = box
-            if scores[i] > thresh:
-                cv2.rectangle(img, (int(xmin), int(ymin)), (int(xmax), int(ymax)), class_colors[int(cls_indx)], 1)
-                cv2.rectangle(img, (int(xmin), int(abs(ymin)-20)), (int(xmax), int(ymin)), class_colors[int(cls_indx)], -1)
-                mess = '%s' % (class_names[int(cls_indx)])
-                cv2.putText(img, mess, (int(xmin), int(ymin-5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1)
+def plot_bbox_labels(img, bbox, label, cls_color, test_scale=0.4):
+    x1, y1, x2, y2 = bbox
+    x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+    t_size = cv2.getTextSize(label, 0, fontScale=1, thickness=2)[0]
+    # plot bbox
+    cv2.rectangle(img, (x1, y1), (x2, y2), cls_color, 2)
+    # plot title bbox
+    cv2.rectangle(img, (x1, y1-t_size[1]), (int(x1 + t_size[0] * test_scale), y1), cls_color, -1)
+    # put the test on the title bbox
+    cv2.putText(img, label, (int(x1), int(y1 - 5)), 0, test_scale, (0, 0, 0), 1, lineType=cv2.LINE_AA)
 
-    elif dataset == 'coco-val' and class_indexs is not None:
-        for i, box in enumerate(bboxes):
-            cls_indx = cls_inds[i]
-            xmin, ymin, xmax, ymax = box
-            if scores[i] > thresh:
-                cv2.rectangle(img, (int(xmin), int(ymin)), (int(xmax), int(ymax)), class_colors[int(cls_indx)], 1)
-                cv2.rectangle(img, (int(xmin), int(abs(ymin)-20)), (int(xmax), int(ymin)), class_colors[int(cls_indx)], -1)
-                cls_id = class_indexs[int(cls_indx)]
-                cls_name = class_names[cls_id]
-                # mess = '%s: %.3f' % (cls_name, scores[i])
-                mess = '%s' % (cls_name)
-                cv2.putText(img, mess, (int(xmin), int(ymin-5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1)
+    return img
+
+
+def visualize(img, bboxes, scores, cls_inds, vis_thresh, class_colors, class_names, class_indexs=None, dataset='voc'):
+    ts = 0.4
+    for i, bbox in enumerate(bboxes):
+        if scores[i] > vis_thresh:
+            if dataset == 'coco-val' or 'coco-test':
+                cls_color = class_colors[int(cls_inds[i])]
+                cls_id = class_indexs[int(cls_inds[i])]
+            else:
+                cls_id = int(cls_inds[i])
+                cls_color = class_colors[cls_id]
+            mess = '%s: %.2f' % (class_names[cls_id], scores[i])
+            img = plot_bbox_labels(img, bbox, mess, cls_color, test_scale=ts)
 
     return img
         
 
-def test(net, device, testset, transform, thresh, class_colors=None, class_names=None, class_indexs=None, dataset='voc'):
+def test(net, 
+         device, 
+         testset,
+         transform, 
+         vis_thresh, 
+         class_colors=None, 
+         class_names=None, 
+         class_indexs=None, 
+         dataset='voc'):
     num_images = len(testset)
-    save_path = os.path.join('det_results/', args.dataset, args.version)
+    save_path = os.path.join(args.save_folder, args.dataset, args.version)
     os.makedirs(save_path, exist_ok=True)
 
     for index in range(num_images):
@@ -77,6 +91,7 @@ def test(net, device, testset, transform, thresh, class_colors=None, class_names
 
         t0 = time.time()
         # forward
+        # inference
         bboxes, scores, cls_inds = net(x)
         print("detection time used ", time.time() - t0, "s")
         
@@ -85,14 +100,25 @@ def test(net, device, testset, transform, thresh, class_colors=None, class_names
         # map the boxes to origin image scale
         bboxes *= scale
 
-        img_processed = vis(img, bboxes, scores, cls_inds, thresh, class_colors, class_names, class_indexs, dataset)
+        # vis detection
+        img_processed = visualize(img=img,
+                            bboxes=bboxes,
+                            scores=scores,
+                            cls_inds=cls_inds,
+                            vis_thresh=vis_thresh,
+                            class_colors=class_colors,
+                            class_names=class_names,
+                            class_indexs=class_indexs,
+                            dataset=dataset
+                            )
         cv2.imshow('detection', img_processed)
         cv2.waitKey(0)
-        print('Saving the' + str(index) + '-th image ...')
-        cv2.imwrite(os.path.join(save_path, str(index).zfill(6) +'.jpg'), img)
+        # save result
+        cv2.imwrite(os.path.join(save_path, str(index).zfill(6) +'.jpg'), img_processed)
 
 
 if __name__ == '__main__':
+    random.seed(0)
     # get device
     if args.cuda:
         print('use cuda')
@@ -101,6 +127,7 @@ if __name__ == '__main__':
     else:
         device = torch.device("cpu")
 
+    # img size
     input_size = args.input_size
 
     # dataset
@@ -124,21 +151,21 @@ if __name__ == '__main__':
                     name='val2017',
                     img_size=input_size)
 
-    class_colors = [(np.random.randint(255),np.random.randint(255),np.random.randint(255)) for _ in range(num_classes)]
+    class_colors = [(np.random.randint(255),
+                     np.random.randint(255),
+                     np.random.randint(255)) for _ in range(num_classes)]
 
     # load net
     if args.version == 'centernet_plus':
         from models.centernet_plus import CenterNetPlus
         net = CenterNetPlus(device=device, 
-                          input_size=input_size, 
-                          num_classes=num_classes,
-                          backbone=args.backbone,
-                          conf_thresh=args.conf_thresh, 
-                          nms_thresh=args.nms_thresh, 
-                          use_nms=args.use_nms
-                          )
-
-    net.load_state_dict(torch.load(args.trained_model, map_location=device))
+                            input_size=input_size, 
+                            num_classes=num_classes,
+                            backbone=args.backbone,
+                            nms_thresh=args.nms_thresh, 
+                            use_nms=args.use_nms)
+                                 
+    net.load_state_dict(torch.load(args.trained_model, map_location=device), strict=False)
     net.to(device).eval()
     print('Finished loading model!')
 
@@ -146,8 +173,9 @@ if __name__ == '__main__':
     test(net=net, 
         device=device, 
         testset=dataset,
+        num_classes=num_classes,
         transform=BaseTransform(input_size),
-        thresh=args.visual_threshold,
+        vis_thresh=args.visual_threshold,
         class_colors=class_colors,
         class_names=class_names,
         class_indexs=class_indexs,
