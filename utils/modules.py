@@ -6,12 +6,12 @@ from copy import deepcopy
 
 
 class Conv(nn.Module):
-    def __init__(self, c1, c2, k, s=1, p=0, d=1, g=1, act='relu'):
+    def __init__(self, c1, c2, k, s=1, p=0, d=1, g=1, bias=True, act='relu'):
         super(Conv, self).__init__()
         if act is not None:
             if act == 'relu':
                 self.convs = nn.Sequential(
-                    nn.Conv2d(c1, c2, k, stride=s, padding=p, dilation=d, groups=g, bias=True),
+                    nn.Conv2d(c1, c2, k, stride=s, padding=p, dilation=d, groups=g, bias=bias),
                     nn.BatchNorm2d(c2),
                     nn.ReLU(inplace=True) if act else nn.Identity()
                 )
@@ -61,9 +61,9 @@ class Bottleneck(nn.Module):
         super(Bottleneck, self).__init__()
         c_ = int(c * e)
         self.branch = nn.Sequential(
-            Conv(c, c_, k=1, act=act),
-            Conv(c_, c_, k=3, p=d, d=d, act=act),
-            Conv(c_, c, k=1, act=act)
+            Conv(c, c_, k=1, act=act, bias=False),
+            Conv(c_, c_, k=3, p=d, d=d, act=act, bias=False),
+            Conv(c_, c, k=1, act=act, bias=False)
         )
 
     def forward(self, x):
@@ -75,8 +75,8 @@ class DilateEncoder(nn.Module):
     def __init__(self, c1, c2, act='relu', dilation_list=[2, 4, 6, 8]):
         super(DilateEncoder, self).__init__()
         self.projector = nn.Sequential(
-            Conv(c1, c2, k=1, act=None),
-            Conv(c2, c2, k=3, p=1, act=None)
+            Conv(c1, c2, k=1, act=None, bias=False),
+            Conv(c2, c2, k=3, p=1, act=None, bias=False)
         )
         encoders = []
         for d in dilation_list:
